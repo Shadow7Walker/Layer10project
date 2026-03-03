@@ -1,0 +1,26 @@
+Searching memory graph for 'react'...
+
+--- Context Pack for 'react' ---
+Entity found: React (Type: tool)
+Related Claims: 4
+----------------------------------------
+
+Claim: React -> uses -> React Compiler (Conf: 1.0)
+Supporting Evidence (1 sources):
+ - [2026-03-02T06:48:44Z] https://github.com/facebook/react/issues/35940
+   Excerpt: ""
+
+Claim: Issue: Bug: -> mentions -> React (Conf: 1.0)
+Supporting Evidence (1 sources):
+ - [2026-03-02T01:14:25Z] https://github.com/facebook/react/issues/35937
+   Excerpt: "Mentioned in issue github_issue_35937"
+
+Claim: bug -> has_dependency -> React (Conf: 1.0)
+Supporting Evidence (1 sources):
+ - [2026-03-02T01:14:25Z] https://github.com/facebook/react/issues/35937
+   Excerpt: "Issues without reproduction steps or code examples may be immediately closed as not actionable."
+
+Claim: Issue: [Compiler Bug]: react mutithread sync exception -> mentions -> React (Conf: 1.0)
+Supporting Evidence (1 sources):
+ - [2026-03-02T06:48:44Z] https://github.com/facebook/react/issues/35940
+   Excerpt: "Mentioned in issue github_issue_35940"
