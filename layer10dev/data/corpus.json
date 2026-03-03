@@ -1,0 +1,62 @@
+[
+  {
+    "source_id": "github_issue_35937",
+    "url": "https://github.com/facebook/react/issues/35937",
+    "author": "tiagolimacamposoficial-cyber",
+    "title": "Bug:",
+    "body": "<!--\n  Please provide a clear and concise description of what the bug is. Include\n  screenshots if needed. Please test using the latest version of the relevant\n  React packages to make sure your issue has not already been fixed.\n-->\n\nReact version:\n\n## Steps To Reproduce\n\n1.\n2.\n\n<!--\n  Your bug will get fixed much faster if we can run your code and it doesn't\n  have dependencies other than React. Issues without reproduction steps or\n  code examples may be immediately closed as not actionable.\n-->\n\nLink to code example:\n\n<!--\n  Please provide a CodeSandbox (https://codesandbox.io/s/new), a link to a\n  repository on GitHub, or provide a minimal code example that reproduces the\n  problem. You may provide a screenshot of the application if you think it is\n  relevant to your bug report. Here are some tips for providing a minimal\n  example: https://stackoverflow.com/help/mcve.\n-->\n\n## The current behavior\n\n\n## The expected behavior\n",
+    "created_at": "2026-03-02T01:14:25Z",
+    "closed_at": "2026-03-02T04:24:34Z",
+    "comments": [
+      {
+        "source_id": "github_comment_3984691204",
+        "url": "https://github.com/facebook/react/issues/35937#issuecomment-3984691204",
+        "author": "ethanmontgomery148-hub",
+        "body": "Good help\r\n\r\nOn Mon, Mar 2, 2026, 4:25 AM Joseph Savona ***@***.***> wrote:\r\n\r\n> Closed #35937 <https://github.com/facebook/react/issues/35937> as\r\n> completed.\r\n>\r\n> \u2014\r\n> Reply to this email directly, view it on GitHub\r\n> <https://github.com/facebook/react/issues/35937#event-23180646412>, or\r\n> unsubscribe\r\n> <https://github.com/notifications/unsubscribe-auth/B7BKMDVM33XWRUYIWXQYGT34OUEKPAVCNFSM6AAAAACWDU6OTGVHI2DSMVQWIX3LMV45UABCJFZXG5LFIV3GK3TUJZXXI2LGNFRWC5DJN5XDWMRTGE4DANRUGY2DCMQ>\r\n> .\r\n> You are receiving this because you are subscribed to this thread.Message\r\n> ID: ***@***.***>\r\n>\r\n",
+        "created_at": "2026-03-02T14:19:06Z"
+      },
+      {
+        "source_id": "github_comment_3986085159",
+        "url": "https://github.com/facebook/react/issues/35937#issuecomment-3986085159",
+        "author": "Moses-main",
+        "body": "Hi team, I'd like to contribute. Please assign!",
+        "created_at": "2026-03-02T18:20:34Z"
+      }
+    ]
+  },
+  {
+    "source_id": "github_issue_35211",
+    "url": "https://github.com/facebook/react/issues/35211",
+    "author": "Darshan-Naik",
+    "title": "Bug: Suspense + React.lazy rendering order regression between React 18.3.1 \u2192 19.1.0 \u2192 19.2.0 (unexpected repeated renders in 19.2)",
+    "body": "I\u2019m seeing a behavioral change in Suspense + React.lazy rendering order when upgrading from React 18.3.1 to React 19.x.\nSpecifically:\n\nReact 18.3.1: Components render once, in order:\nCompA \u2192 CompB \u2192 CompC \u2192 CompD\n\nReact 19.1.0: Still renders cleanly in order (same as 18.3.1).\n\nReact 19.2.0: Rendering order changes significantly, and components render multiple times in progressive batches, producing logs like:\n```\nCompA\nCompB\nCompA\nCompB\nCompC\nCompA\nCompB\nCompC\nCompD\n```\nThis occurs even in production build, and without StrictMode.\nSplitting each component into its own Suspense boundary restores the expected behavior.\n\nThis appears to be caused by a change in Suspense reveal / pre-warm scheduling between 19.1 and 19.2 \u2014 but I'm not sure if this is an intended change, an edge case, or a regression.\n\nI'm opening this issue to confirm:\n- Is this new repeated rendering behavior expected in 19.2?\n- Is there documentation on the Suspense behavior change between 19.1 and 19.2?\n- Should a single Suspense boundary cause repeated re-renders for sibling lazy components in this minimal case?\n\n## Minimal Reproduction\nReproduction environment\nReact versions tested:\n18.3.1\n19.1.0\n19.2.0\nBuild: Production build \nMode: No StrictMode\nBundler: any (Vite/Webpack tested) \u2014 same results\nBrowser: Chrome stable\n\n## Code Example (minimal)\n\nApp.tsx\n```\nimport { lazy, Suspense } from \"react\";\n\nconst CompA = lazy(() => import(\"./CompA\"));\nconst CompB = lazy(() => import(\"./CompB\"));\nconst CompC = lazy(() => import(\"./CompC\"));\nconst CompD = lazy(() => import(\"./CompD\"));\n\nexport default function App() {\n  return (\n    <div>\n      <Suspense fallback={null}>\n        <CompA />\n        <CompB />\n        <CompC />\n        <CompD />\n      </Suspense>\n    </div>\n  );\n}\n\n```\n\nCompA.tsx (same for B/C/D)\n\n```\nconst CompA = () => {\n  console.log(\"CompA\");\n  return <div>CompA</div>;\n};\n\nexport default CompA;\n\n```\n\n## Output logs\nReact 18.3.1\n```\nCompA\nCompB\nCompC\nCompD\n```\n\nReact 19.1.0\n```\nCompA\nCompB\nCompC\nCompD\n```\n\nReact 19.2.0\n```\nCompA\nCompB\nCompA\nCompB\nCompC\nCompA\nCompB\nCompC\nCompD\n```\n## Additional Observation\nIf I change the code to one Suspense per component:\n```\n<div>\n  <Suspense fallback={null}><CompA /></Suspense>\n  <Suspense fallback={null}><CompB /></Suspense>\n  <Suspense fallback={null}><CompC /></Suspense>\n  <Suspense fallback={null}><CompD /></Suspense>\n</div>\n```\nThen React 19.2 logs return to normal:\n```\nCompA\nCompB\nCompC\nCompD\n```\nThis strongly suggests the repeated-render behavior is tied to shared sibling Suspense trees.\n\n# Questions for the React team\n\n- Is the repeated, interleaved rendering behavior in React 19.2 an intentional Suspense change?\n- Is this part of the new \"pre-warm / batched reveals\" behavior introduced in React 19?\n- Should this happen even in a minimal tree where each component only does a static lazy import?\n- Is this considered a regression, or should apps rely on separate Suspense boundaries to avoid this?\n",
+    "created_at": "2025-11-25T16:23:20Z",
+    "closed_at": "2026-03-02T18:17:20Z",
+    "comments": [
+      {
+        "source_id": "github_comment_3946175083",
+        "url": "https://github.com/facebook/react/issues/35211#issuecomment-3946175083",
+        "author": "github-actions[bot]",
+        "body": "This issue has been automatically marked as stale. **If this issue is still affecting you, please leave any comment** (for example, \"bump\"), and we'll keep it open. We are sorry that we haven't been able to prioritize it yet. If you have any new additional information, please include it with your comment!",
+        "created_at": "2026-02-23T17:26:43Z"
+      },
+      {
+        "source_id": "github_comment_3986068811",
+        "url": "https://github.com/facebook/react/issues/35211#issuecomment-3986068811",
+        "author": "github-actions[bot]",
+        "body": "Closing this issue after a prolonged period of inactivity. If this issue is still present in the latest release, please create a new issue with up-to-date information. Thank you!",
+        "created_at": "2026-03-02T18:17:20Z"
+      }
+    ]
+  },
+  {
+    "source_id": "github_issue_35940",
+    "url": "https://github.com/facebook/react/issues/35940",
+    "author": "yangliwen-peter",
+    "title": "[Compiler Bug]: react mutithread sync exception",
+    "body": "### What kind of issue is this?\n\n- [x] React Compiler core (the JS output is incorrect, or your app works incorrectly after optimization)\n- [x] babel-plugin-react-compiler (build issue installing or using the Babel plugin)\n- [x] eslint-plugin-react-hooks (build issue installing or using the eslint plugin)\n- [x] react-compiler-healthcheck (build issue installing or using the healthcheck script)\n\n### Link to repro\n\nreact\n\n### Repro steps\n\n1.compiler wrong with math index unmatch.\n2.compiler unable to exact to learn to write jvm.gc collect.\n3.wrong design pattern of upload code.\n\n### How often does this bug happen?\n\nEvery time\n\n### What version of React are you using?\n\n1.11\n\n### What version of React Compiler are you using?\n\n1.01",
+    "created_at": "2026-03-02T06:48:44Z",
+    "closed_at": "2026-03-02T16:48:23Z",
+    "comments": []
+  }
+]
